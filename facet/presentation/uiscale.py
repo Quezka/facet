@@ -55,12 +55,20 @@ def _screen_height() -> int | None:
         QGuiApplication.setDesktopFileName(names[2])
 
 
+MARK = "FACET_SCALE_SET"  # what we put in QT_SCALE_FACTOR ourselves, to tell it from yours
+
+
 def apply_before_app():
-    """Set QT_SCALE_FACTOR from the choice. Does nothing when it's already set (by you, on
-    the command line) or when the choice leaves the scale alone."""
-    if "QT_SCALE_FACTOR" in os.environ:
+    """Set QT_SCALE_FACTOR from the choice. Does nothing when you set it yourself (on the
+    command line). A value we set earlier is inherited by a restarted Facet, so it is
+    recognised by MARK and replaced, or the new choice would never apply."""
+    current = os.environ.get("QT_SCALE_FACTOR")
+    if current is not None and current != os.environ.get(MARK):
         return
     choice = chosen()
     value = factor(choice, _screen_height() if choice == "auto" else None)
     if value != 1.0:
-        os.environ["QT_SCALE_FACTOR"] = f"{value:g}"
+        os.environ["QT_SCALE_FACTOR"] = os.environ[MARK] = f"{value:g}"
+    else:
+        os.environ.pop("QT_SCALE_FACTOR", None)
+        os.environ.pop(MARK, None)

@@ -6,6 +6,12 @@ import pytest
 
 os.environ.setdefault("QT_SCALE_FACTOR", "1")  # tests measure pixels: no automatic scaling
 
+try:  # tests must never touch the real settings of the person running them
+    from PySide6.QtCore import QStandardPaths
+    QStandardPaths.setTestModeEnabled(True)
+except ImportError:
+    pass
+
 from facet.application.models import ModelService
 from facet.application.services import Services
 from facet.application.updates import UpdateService

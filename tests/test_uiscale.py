@@ -82,3 +82,25 @@ print(app.applicationName(), app.organizationName(), app.desktopFileName())
     done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
                           timeout=60)
     assert done.stdout.strip().endswith("Name Org io.example.Name"), done.stdout + done.stderr
+
+
+def test_a_restart_picks_up_the_new_choice(monkeypatch):
+    """The restarted app inherits the scale the old one set: it must not mistake it for
+    one the user set by hand."""
+    from PySide6.QtCore import QSettings
+    monkeypatch.delenv("QT_SCALE_FACTOR", raising=False)
+    monkeypatch.delenv(uiscale.MARK, raising=False)
+    QSettings().setValue("ui_scale", "130")
+    uiscale.apply_before_app()
+    assert os.environ["QT_SCALE_FACTOR"] == "1.3"
+    QSettings().setValue("ui_scale", "80")  # chosen in Settings, then "Restart now"
+    uiscale.apply_before_app()
+    assert os.environ["QT_SCALE_FACTOR"] == "0.8"
+    QSettings().setValue("ui_scale", "100")
+    uiscale.apply_before_app()
+    assert "QT_SCALE_FACTOR" not in os.environ
+    monkeypatch.setenv("QT_SCALE_FACTOR", "2")  # yours: left alone
+    QSettings().setValue("ui_scale", "80")
+    uiscale.apply_before_app()
+    assert os.environ["QT_SCALE_FACTOR"] == "2"
+    QSettings().remove("ui_scale")

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.2] - 2026-10-21
+- Fixed: choosing an interface size in Settings and pressing "Restart" now really applies it
+  (the restarted app used to mistake the old size for one you had forced from the command line).
+
 ## [0.1.1] - 2026-10-21
 - The interface is now the same size as Quire and the other apps: "Automatic" picks 85% on
   short screens (like a 1366x768 laptop) and 100% elsewhere, and the text uses the system
