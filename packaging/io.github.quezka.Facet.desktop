@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Facet
+GenericName=3D model viewer
+Comment=Look at 3D models, and measure the ones that need it
+Comment[it]=Guarda i modelli 3D e misura quelli che lo richiedono
+Comment[ru]=Просмотр 3D-моделей и точные измерения
+Exec=facet %f
+Icon=io.github.quezka.Facet
+Terminal=false
+Categories=Graphics;3DGraphics;Viewer;Education;
+Keywords=3d;stl;obj;ply;3mf;model;mesh;viewer;measure;print;
+MimeType=model/stl;model/x.stl-binary;model/x.stl-ascii;application/sla;model/obj;application/vnd.ms-package.3dmanufacturing-3dmodel+xml;

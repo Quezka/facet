@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata: what Ubuntu App Center / GNOME Software show about Facet. -->
+<component type="desktop-application">
+  <id>io.github.quezka.Facet</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Facet</name>
+  <summary>A light 3D model viewer with precise measuring</summary>
+  <developer id="io.github.quezka">
+    <name>Quezka</name>
+  </developer>
+
+  <description>
+    <p>
+      Facet opens 3D models quickly and keeps out of the way. It suits a sculpted figure
+      you just want to turn around, and a technical part whose sizes you need exactly.
+    </p>
+    <ul>
+      <li>Opens STL (binary and text), OBJ, PLY and 3MF, with the colours they carry</li>
+      <li>Turn, move and zoom; standard views; perspective or flat (orthographic) view</li>
+      <li>Solid, outlined-edges and wireframe display, smooth or faceted shading</li>
+      <li>Exact measuring: distances with X/Y/Z parts, angles, and the diameter of a hole, with snapping to corners and edges</li>
+      <li>Size of the model, volume, surface area, centre of mass and weight in common materials, in mm, cm, m or inches</li>
+      <li>A section plane to look inside a part, and a mesh check for holes and flipped faces before printing</li>
+      <li>Save or copy a picture of the view</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.quezka.Facet.desktop</launchable>
+  <provides>
+    <binary>facet</binary>
+    <mediatype>model/stl</mediatype>
+    <mediatype>model/obj</mediatype>
+    <mediatype>application/vnd.ms-package.3dmanufacturing-3dmodel+xml</mediatype>
+  </provides>
+
+  <url type="homepage">https://github.com/Quezka/facet</url>
+  <url type="bugtracker">https://github.com/Quezka/facet/issues</url>
+
+  <categories>
+    <category>Graphics</category>
+    <category>3DGraphics</category>
+    <category>Viewer</category>
+  </categories>
+  <keywords>
+    <keyword>3D</keyword>
+    <keyword>STL</keyword>
+    <keyword>OBJ</keyword>
+    <keyword>3MF</keyword>
+    <keyword>mesh</keyword>
+    <keyword>3D printing</keyword>
+    <keyword>measure</keyword>
+  </keywords>
+
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#dbe4ff</color>
+    <color type="primary" scheme_preference="dark">#1e3a8a</color>
+  </branding>
+
+  <!-- Newest first. Every released version needs an entry; tests enforce it. -->
+  <releases>
+    <release version="0.1.0" date="2026-10-21">
+      <description>
+        <p>First release: opens STL, OBJ, PLY and 3MF models, with exact distance, angle and hole measuring, a section plane, a mesh check, and a high-contrast, large-text interface.</p>
+      </description>
+    </release>
+  </releases>
+</component>

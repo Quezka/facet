@@ -1,0 +1,19 @@
+# Changelog
+
+## [0.1.0] - 2026-10-21
+- First release. Opens STL (binary and text), OBJ (with vertex and material colours), PLY and
+  3MF models; drop a file on the window or give it on the command line, and step through the
+  other models in the same folder with Alt+Left / Alt+Right.
+- A fast OpenGL view: drag to turn, right-drag or Shift-drag to move, wheel to zoom towards the
+  cursor, double-click to turn around a point, standard views (keys 1-7), perspective or flat
+  (orthographic) projection, solid / outlined-edges / wireframe, smooth or faceted shading.
+- Exact measuring for technical parts: click two points for a distance (with its X, Y and Z
+  parts), three for an angle, or three around a hole for its diameter and radius. Points are
+  found exactly (not from the picture) and snap to corners and edges. The model's units are
+  mm, cm, m or inches, with 1 to 4 decimals; sizes of the bounding box can be drawn on the model.
+- A details panel: size, volume, surface area, centre of mass, and weight in ten common
+  materials. A mesh check reports holes, edges shared by three faces, flipped faces, empty
+  triangles and separate parts. A section plane cuts the model along X, Y or Z.
+- Save or copy a picture of the view.
+- Like the other apps: light, dark and high-contrast looks, large text and an interface size up
+  to 200%, English / Italian / Russian, daily update check, `.deb` and Windows installer.
