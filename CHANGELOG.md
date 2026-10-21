@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6] - 2026-10-21
+- Linux: `.stl`, `.obj`, `.ply` and `.3mf` files get a Facet icon in the file manager (a page
+  with the faceted cube and the format's name) as soon as the package is installed. Facet
+  registers its own file types, kinds of the usual ones, so every other app that opens STL
+  still does.
+
 ## [0.1.5] - 2026-10-21
 - The interface is built at its size instead of being magnified by Qt: text, icons, spacing and
   the style sheet are multiplied by the chosen scale (Settings, applies after a restart). This

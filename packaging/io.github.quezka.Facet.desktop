@@ -10,4 +10,4 @@ Icon=io.github.quezka.Facet
 Terminal=false
 Categories=Graphics;3DGraphics;Viewer;Education;
 Keywords=3d;stl;obj;ply;3mf;model;mesh;viewer;measure;print;
-MimeType=model/stl;model/x.stl-binary;model/x.stl-ascii;application/sla;model/obj;application/vnd.ms-package.3dmanufacturing-3dmodel+xml;
+MimeType=application/x-facet-stl;application/x-facet-obj;application/x-facet-ply;application/x-facet-3mf;model/stl;model/x.stl-binary;model/x.stl-ascii;application/sla;model/obj;application/vnd.ms-package.3dmanufacturing-3dmodel+xml;

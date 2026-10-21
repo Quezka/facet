@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- STL model file: a page with a faceted solid, in Facet's colours. -->
+  <defs>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b6be0"/>
+      <stop offset="1" stop-color="#4c4cc4"/>
+    </linearGradient>
+  </defs>
+  <path d="M52 16h104l56 56v152a16 16 0 0 1-16 16H52a16 16 0 0 1-16-16V32a16 16 0 0 1 16-16z"
+        fill="#ffffff" stroke="#b9bec9" stroke-width="4"/>
+  <path d="M156 16v40a16 16 0 0 0 16 16h40z" fill="#dfe2ea" stroke="#b9bec9" stroke-width="4"
+        stroke-linejoin="round"/>
+  <path d="M124 70L168 96L124 122L80 96Z" fill="#8f90ec"/>
+  <path d="M80 96L124 122V176L80 150Z" fill="#c7c7f2"/>
+  <path d="M168 96V150L124 176V122Z" fill="#f5a524"/>
+  <rect x="36" y="186" width="176" height="46" rx="10" fill="url(#band)"/>
+  <text x="124" y="219" text-anchor="middle" font-family="Ubuntu, 'DejaVu Sans', Arial, sans-serif"
+        font-size="34" font-weight="700" fill="#ffffff" letter-spacing="2">STL</text>
+</svg>

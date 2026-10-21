@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Facet's own file types for 3D models. They are kinds of the usual types (so every app that
+     opens model/stl still opens them), but with a higher glob weight and an icon of their own:
+     desktop icon themes already draw a generic icon for model/stl, which would hide ours. -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-facet-stl">
+    <comment>STL 3D model</comment>
+    <comment xml:lang="it">Modello 3D STL</comment>
+    <comment xml:lang="ru">3D-модель STL</comment>
+    <sub-class-of type="model/stl"/>
+    <icon name="application-x-facet-stl"/>
+    <glob pattern="*.stl" weight="60"/>
+  </mime-type>
+  <mime-type type="application/x-facet-obj">
+    <comment>OBJ 3D model</comment>
+    <comment xml:lang="it">Modello 3D OBJ</comment>
+    <comment xml:lang="ru">3D-модель OBJ</comment>
+    <sub-class-of type="model/obj"/>
+    <icon name="application-x-facet-obj"/>
+    <glob pattern="*.obj" weight="60"/>
+  </mime-type>
+  <mime-type type="application/x-facet-ply">
+    <comment>PLY 3D model</comment>
+    <comment xml:lang="it">Modello 3D PLY</comment>
+    <comment xml:lang="ru">3D-модель PLY</comment>
+    <icon name="application-x-facet-ply"/>
+    <glob pattern="*.ply" weight="60"/>
+  </mime-type>
+  <mime-type type="application/x-facet-3mf">
+    <comment>3MF 3D model</comment>
+    <comment xml:lang="it">Modello 3D 3MF</comment>
+    <comment xml:lang="ru">3D-модель 3MF</comment>
+    <sub-class-of type="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
+    <icon name="application-x-facet-3mf"/>
+    <glob pattern="*.3mf" weight="60"/>
+  </mime-type>
+</mime-info>

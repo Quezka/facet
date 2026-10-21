@@ -30,6 +30,10 @@
   <launchable type="desktop-id">io.github.quezka.Facet.desktop</launchable>
   <provides>
     <binary>facet</binary>
+    <mediatype>application/x-facet-stl</mediatype>
+    <mediatype>application/x-facet-obj</mediatype>
+    <mediatype>application/x-facet-ply</mediatype>
+    <mediatype>application/x-facet-3mf</mediatype>
     <mediatype>model/stl</mediatype>
     <mediatype>model/obj</mediatype>
     <mediatype>application/vnd.ms-package.3dmanufacturing-3dmodel+xml</mediatype>
@@ -61,6 +65,11 @@
 
   <!-- Newest first. Every released version needs an entry; tests enforce it. -->
   <releases>
+    <release version="0.1.6" date="2026-10-21">
+      <description>
+        <p>3D model files (.stl, .obj, .ply, .3mf) get a Facet icon in the file manager.</p>
+      </description>
+    </release>
     <release version="0.1.5" date="2026-10-21">
       <description>
         <p>The interface is built at its chosen size instead of being scaled, and mouse rotation goes the right way.</p>

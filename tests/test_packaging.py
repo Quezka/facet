@@ -79,3 +79,33 @@ def test_release_notes_stop_at_the_next_version():
 def test_version_is_semver():
     import re
     assert re.fullmatch(r"\d+\.\d+\.\d+", facet.__version__)
+
+
+def test_every_3d_file_type_has_an_icon_and_is_offered_by_the_desktop_file():
+    mime = ET.parse(PACKAGING / f"{facet.APP_ID}.xml").getroot()
+    ns = "{http://www.freedesktop.org/standards/shared-mime-info}"
+    entry = configparser.ConfigParser(interpolation=None)
+    entry.optionxform = str
+    entry.read(DESKTOP, encoding="utf-8")
+    offered = entry["Desktop Entry"]["MimeType"].split(";")
+    globs = set()
+    for kind in mime.findall(f"{ns}mime-type"):
+        name = kind.get("type")
+        icon = kind.find(f"{ns}icon").get("name")
+        assert (PACKAGING / "icons" / f"{icon}.svg").is_file(), f"no icon file for {name}"
+        assert name in offered, f"{name} is missing from the desktop file's MimeType"
+        glob = kind.find(f"{ns}glob")
+        assert int(glob.get("weight")) > 50  # beats the stock type, whose icon the theme owns
+        globs.add(glob.get("pattern"))
+    assert globs == {f"*{ext}" for ext in facet.MODEL_EXTENSIONS}
+
+
+def test_file_icons_are_up_to_date(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location("icons_script", ROOT / "scripts" / "make_file_icons.py")
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    monkeypatch.setattr(script, "OUT", tmp_path)
+    script.main()
+    for made in tmp_path.glob("*.svg"):
+        assert made.read_text(encoding="utf-8") == (PACKAGING / "icons" / made.name).read_text(
+            encoding="utf-8"), f"run scripts/make_file_icons.py ({made.name} is stale)"

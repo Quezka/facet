@@ -5,7 +5,8 @@ Layout inside the package:
     /usr/bin/facet                   symlink to /opt/facet/Facet
     /usr/share/applications/<APP_ID>.desktop
     /usr/share/metainfo/<APP_ID>.metainfo.xml   developer/publisher info for app stores
-    /usr/share/icons/hicolor/...        scalable SVG + 256px PNG named <APP_ID>
+    /usr/share/mime/packages/<APP_ID>.xml       the 3D model file types (.stl .obj .ply .3mf)
+    /usr/share/icons/hicolor/...        scalable SVG + 256px PNG named <APP_ID>, and the file-type icons
 
 The desktop database and icon cache refresh through dpkg triggers, so no
 maintainer scripts are needed.
@@ -66,7 +67,8 @@ def build_deb(app_dir: Path, png_icon: Path, out_dir: Path, work_dir: Path) -> P
 
     share = stage / "usr" / "share"
     for folder, name in [("applications", f"{app_id}.desktop"),
-                         ("metainfo", f"{app_id}.metainfo.xml")]:
+                         ("metainfo", f"{app_id}.metainfo.xml"),
+                         ("mime/packages", f"{app_id}.xml")]:
         (share / folder).mkdir(parents=True)
         shutil.copy(PACKAGING / name, share / folder / name)
     doc = share / "doc" / "facet"
@@ -82,6 +84,9 @@ def build_deb(app_dir: Path, png_icon: Path, out_dir: Path, work_dir: Path) -> P
     icons = share / "icons" / "hicolor"
     (icons / "scalable" / "apps").mkdir(parents=True)
     shutil.copy(ROOT / "facet" / "assets" / "icon.svg", icons / "scalable" / "apps" / f"{app_id}.svg")
+    (icons / "scalable" / "mimetypes").mkdir(parents=True)
+    for svg in sorted((PACKAGING / "icons").glob("*.svg")):  # the 3D model file types
+        shutil.copy(svg, icons / "scalable" / "mimetypes" / svg.name)
     (icons / "256x256" / "apps").mkdir(parents=True)
     shutil.copy(png_icon, icons / "256x256" / "apps" / f"{app_id}.png")
 
