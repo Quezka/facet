@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.1] - 2026-10-21
+- The interface is now the same size as Quire and the other apps: "Automatic" picks 85% on
+  short screens (like a 1366x768 laptop) and 100% elsewhere, and the text uses the system
+  size. Larger sizes (up to 200%) are still in Settings for anyone who wants them.
+
 ## [0.1.0] - 2026-10-21
 - First release. Opens STL (binary and text), OBJ (with vertex and material colours), PLY and
   3MF models; drop a file on the window or give it on the command line, and step through the

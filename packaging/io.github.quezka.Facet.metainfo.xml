@@ -61,6 +61,11 @@
 
   <!-- Newest first. Every released version needs an entry; tests enforce it. -->
   <releases>
+    <release version="0.1.1" date="2026-10-21">
+      <description>
+        <p>The interface now has the same size as the other apps.</p>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-10-21">
       <description>
         <p>First release: opens STL, OBJ, PLY and 3MF models, with exact distance, angle and hole measuring, a section plane, a mesh check, and a high-contrast, large-text interface.</p>

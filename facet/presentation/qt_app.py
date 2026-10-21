@@ -25,9 +25,6 @@ def create_application(argv: list[str]) -> QApplication:
         QSurfaceFormat.setDefaultFormat(fmt)
     app = QApplication.instance() or QApplication(argv)
     app.setStyle("Fusion")
-    font = app.font()
-    font.setPointSizeF(max(font.pointSizeF(), 11.0))  # bigger than the system default
-    app.setFont(font)
     app.setWindowIcon(QIcon(str(APP_ICON)))
     i18n.install(app=app)  # before any window is built: texts are translated as they're made
     theme.install(app)

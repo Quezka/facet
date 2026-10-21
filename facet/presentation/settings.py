@@ -57,7 +57,7 @@ class SettingsDialog(QDialog):
         self.scale.setCurrentIndex(max(0, self.scale.findData(uiscale.chosen())))
         self.scale.currentIndexChanged.connect(self._scale_changed)
         size.add(self.scale)
-        size.add(label(_("Applies after a restart. Automatic is a comfortable, slightly larger size."), "hint"))
+        size.add(label(_("Applies after a restart. Automatic fits the size of your screen."), "hint"))
         self.restart_size = QPushButton(_("Restart Facet now"))
         self.restart_size.hide()
         self.restart_size.clicked.connect(self._restart)

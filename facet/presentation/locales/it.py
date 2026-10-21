@@ -161,8 +161,8 @@ MESSAGES = {
     "Interface language": "Lingua dell'interfaccia",
     "Interface size": "Dimensione dell'interfaccia",
     "Automatic": "Automatica",
-    "Applies after a restart. Automatic is a comfortable, slightly larger size.":
-        "Si applica dopo un riavvio. Automatica è una dimensione comoda, un po' più grande.",
+    "Applies after a restart. Automatic fits the size of your screen.":
+        "Si applica dopo un riavvio. Automatica si adatta alla dimensione dello schermo.",
     "Updates": "Aggiornamenti",
     "Check for new versions once a day": "Cerca nuove versioni una volta al giorno",
     "Check now": "Controlla ora",

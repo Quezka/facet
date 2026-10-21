@@ -161,8 +161,8 @@ MESSAGES = {
     "Interface language": "Язык интерфейса",
     "Interface size": "Размер интерфейса",
     "Automatic": "Автоматически",
-    "Applies after a restart. Automatic is a comfortable, slightly larger size.":
-        "Применяется после перезапуска. «Автоматически» — удобный, чуть увеличенный размер.",
+    "Applies after a restart. Automatic fits the size of your screen.":
+        "Применяется после перезапуска. «Автоматически» подбирает размер под ваш экран.",
     "Updates": "Обновления",
     "Check for new versions once a day": "Проверять новые версии раз в день",
     "Check now": "Проверить сейчас",
