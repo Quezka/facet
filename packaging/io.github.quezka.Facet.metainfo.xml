@@ -65,7 +65,7 @@
 
   <!-- Newest first. Every released version needs an entry; tests enforce it. -->
   <releases>
-    <release version="0.1.7" date="2026-10-21">
+    <release version="0.1.8" date="2026-10-21">
       <description>
         <p>Windows: Facet file icons for 3D models, once Facet is chosen as their default app.</p>
       </description>

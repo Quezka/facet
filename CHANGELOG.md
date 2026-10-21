@@ -1,6 +1,7 @@
 # Changelog
 
-## [0.1.7] - 2026-10-21
+## [0.1.8] - 2026-10-21
+- (0.1.7 was never published: a new test broke the others. Same content, fixed.)
 - Windows: the installer gives `.stl`, `.obj`, `.ply` and `.3mf` the same Facet file icons as on
   Linux, one per format, and lists Facet under "Open with". Windows shows a file type's icon
   from the app that is its default, so the icons appear once you make Facet the default for

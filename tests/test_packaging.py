@@ -111,20 +111,24 @@ def test_file_icons_are_up_to_date(tmp_path, monkeypatch):
             encoding="utf-8"), f"run scripts/make_file_icons.py ({made.name} is stale)"
 
 
-def load_build():
-    spec = importlib.util.spec_from_file_location("build_script", ROOT / "scripts" / "build.py")
-    build = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(build)
-    return build
-
-
-def test_windows_file_icons_are_valid_multi_size_icos(tmp_path, monkeypatch):
+def test_windows_file_icons_are_valid_multi_size_icos(tmp_path):
+    """Run apart: building the icons starts a bare Qt application, which must not be the
+    one the other tests' windows later try to share."""
     import struct
+    import subprocess
+    import sys
 
     pytest.importorskip("PySide6")
-    build = load_build()
-    monkeypatch.setattr(build, "BUILD", tmp_path)
-    folder = build.render_file_icons()
+    code = (
+        "import importlib.util, pathlib, sys\n"
+        "spec = importlib.util.spec_from_file_location('b', sys.argv[1] + '/scripts/build.py')\n"
+        "build = importlib.util.module_from_spec(spec); spec.loader.exec_module(build)\n"
+        "build.BUILD = pathlib.Path(sys.argv[2]); build.render_file_icons()\n")
+    done = subprocess.run([sys.executable, "-c", code, str(ROOT), str(tmp_path)],
+                          capture_output=True, text=True, timeout=120,
+                          env={**__import__("os").environ, "QT_QPA_PLATFORM": "offscreen"})
+    assert done.returncode == 0, done.stderr
+    folder = tmp_path / "file-icons"
     icos = {p.stem: p.read_bytes() for p in folder.glob("*.ico")}
     assert set(icos) == {ext.lstrip(".") for ext in facet.MODEL_EXTENSIONS}
     for data in icos.values():
