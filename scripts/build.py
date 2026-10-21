@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
+import struct
 import subprocess
 import sys
 from datetime import date
@@ -45,6 +46,49 @@ def render_icons() -> Path:
     if not image.save(str(target)):
         raise SystemExit(f"could not write {target}")
     return target
+
+
+def write_ico(images, target: Path) -> Path:
+    """An .ico holding PNG-compressed images (Windows Vista and later read these), one per size."""
+    from PySide6.QtCore import QBuffer, QIODevice
+
+    blobs = []
+    for image in images:
+        buffer = QBuffer()
+        buffer.open(QIODevice.WriteOnly)
+        image.save(buffer, "PNG")
+        blobs.append((image.width(), bytes(buffer.data())))
+    header = struct.pack("<HHH", 0, 1, len(blobs))
+    offset = 6 + 16 * len(blobs)
+    entries = b""
+    for size, data in blobs:
+        entries += struct.pack("<BBBBHHII", size % 256, size % 256, 0, 0, 1, 32, len(data), offset)
+        offset += len(data)
+    target.write_bytes(header + entries + b"".join(data for _size, data in blobs))
+    return target
+
+
+def render_file_icons() -> Path:
+    """packaging/icons/application-x-facet-<ext>.svg -> build/file-icons/<ext>.ico (Windows)."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QGuiApplication, QImage, QPainter
+    from PySide6.QtSvg import QSvgRenderer
+
+    app = QGuiApplication.instance() or QGuiApplication([])  # noqa: F841 (keeps Qt alive)
+    out = BUILD / "file-icons"
+    out.mkdir(parents=True, exist_ok=True)
+    for svg in sorted((ROOT / "packaging" / "icons").glob("application-x-facet-*.svg")):
+        renderer = QSvgRenderer(str(svg))
+        images = []
+        for size in (16, 32, 48, 256):
+            image = QImage(size, size, QImage.Format_ARGB32)
+            image.fill(Qt.transparent)
+            painter = QPainter(image)
+            renderer.render(painter)
+            painter.end()
+            images.append(image)
+        write_ico(images, out / f"{svg.stem.removeprefix('application-x-facet-')}.ico")
+    return out
 
 
 def write_windows_version_file() -> Path:
@@ -102,6 +146,7 @@ def build_installer(icon: Path) -> Path:
         f"/DHomepage={facet.HOMEPAGE}",
         f"/DSourceDir={out / 'Facet'}",
         f"/DIconFile={icon}",
+        f"/DFileIconsDir={render_file_icons()}",
         f"/DOutputDir={out}",
         str(ROOT / "packaging" / "facet.iss"),
     ], check=True)

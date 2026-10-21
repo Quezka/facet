@@ -3,7 +3,7 @@
 Release metadata below is the single source for packaging (the .deb, AppStream
 metainfo checks, Windows file properties) and the About dialog.
 """
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 APP_NAME = "Facet"
 APP_ID = "io.github.quezka.Facet"  # reverse-DNS id used by desktop files and AppStream

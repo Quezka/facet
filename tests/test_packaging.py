@@ -109,3 +109,39 @@ def test_file_icons_are_up_to_date(tmp_path, monkeypatch):
     for made in tmp_path.glob("*.svg"):
         assert made.read_text(encoding="utf-8") == (PACKAGING / "icons" / made.name).read_text(
             encoding="utf-8"), f"run scripts/make_file_icons.py ({made.name} is stale)"
+
+
+def load_build():
+    spec = importlib.util.spec_from_file_location("build_script", ROOT / "scripts" / "build.py")
+    build = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build)
+    return build
+
+
+def test_windows_file_icons_are_valid_multi_size_icos(tmp_path, monkeypatch):
+    import struct
+
+    pytest.importorskip("PySide6")
+    build = load_build()
+    monkeypatch.setattr(build, "BUILD", tmp_path)
+    folder = build.render_file_icons()
+    icos = {p.stem: p.read_bytes() for p in folder.glob("*.ico")}
+    assert set(icos) == {ext.lstrip(".") for ext in facet.MODEL_EXTENSIONS}
+    for data in icos.values():
+        reserved, kind, count = struct.unpack_from("<HHH", data)
+        assert (reserved, kind, count) == (0, 1, 4)
+        sizes = []
+        for i in range(count):
+            w, h, _c, _r, planes, bits, length, offset = struct.unpack_from("<BBBBHHII", data, 6 + 16 * i)
+            sizes.append(w or 256)
+            assert data[offset:offset + 8] == b"\x89PNG\r\n\x1a\n" and offset + length <= len(data)
+        assert sizes == [16, 32, 48, 256]
+
+
+def test_installer_registers_each_3d_format_with_its_icon():
+    script = (PACKAGING / "facet.iss").read_text(encoding="utf-8")
+    for ext in facet.MODEL_EXTENSIONS:
+        name = ext.lstrip(".")
+        assert f'Classes\\{ext}\\OpenWithProgids' in script
+        assert f"icons\\{name}.ico" in script
+    assert "FileIconsDir" in script
