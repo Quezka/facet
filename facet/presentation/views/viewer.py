@@ -97,25 +97,35 @@ class ViewerPage(Page):
         self.open_button.clicked.connect(self.openRequested)
         self.add_actions(self.previous, self.next, picture, self.open_button)
 
-        self.viewport = Viewport(self.models)
-        self.viewport.format_length = self.measures.length
-        theme.themed(self.viewport.set_palette)
-        self.viewport.measured.connect(self._measured)
-        self.viewport.hint.connect(self._hint)
-        self.viewport.toolFinished.connect(lambda: self.tools.set_value(""))
+        self._viewport: Viewport | None = None  # made when the first model opens (see below)
 
         self.root.addWidget(self._toolbar())
         body = QHBoxLayout()
         body.setSpacing(12)
         frame = QFrame(objectName="card")
-        inner = QVBoxLayout(frame)
-        inner.setContentsMargins(2, 2, 2, 2)
-        inner.addWidget(self.viewport)
+        self._frame_layout = QVBoxLayout(frame)
+        self._frame_layout.setContentsMargins(2, 2, 2, 2)
         body.addWidget(frame, 1)
         self.inspector = self._inspector()
         body.addWidget(self.inspector)
         self.root.addLayout(body, 1)
         self.set_loaded(False)
+
+    # ---- the 3D view -----------------------------------------------------------------
+    @property
+    def viewport(self) -> Viewport:
+        """Made on first use. A window that holds an OpenGL widget is composed through the
+        graphics card on every repaint, which makes the whole interface (even the Home page's
+        hover highlights) heavier, so it only exists once there is a model to show."""
+        if self._viewport is None:
+            viewport = self._viewport = Viewport(self.models)
+            viewport.format_length = self.measures.length
+            theme.themed(viewport.set_palette)
+            viewport.measured.connect(self._measured)
+            viewport.hint.connect(self._hint)
+            viewport.toolFinished.connect(lambda: self.tools.set_value(""))
+            self._frame_layout.addWidget(viewport)
+        return self._viewport
 
     # ---- building --------------------------------------------------------------------
     def _toolbar(self) -> QWidget:
@@ -149,7 +159,7 @@ class ViewerPage(Page):
         fit.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         theme.set_icon(fit, "fit", "muted")
         fit.setToolTip(_("Fit the model to the window (F)"))
-        fit.clicked.connect(self.viewport.fit)
+        fit.clicked.connect(lambda: self.viewport.fit())
         row.addWidget(fit)
         row.addStretch()
         self.status = QLabel("", objectName="muted")

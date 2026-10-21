@@ -217,3 +217,14 @@ def test_italian_ui_builds(app, services):
         w.close()
     finally:
         i18n.install("en")
+
+
+def test_the_3d_view_only_exists_once_a_model_is_open(window, samples):
+    """An OpenGL widget makes every repaint of the window heavier: keep it off the Home page."""
+    from facet.presentation.viewport import Viewport
+    assert window.viewer._viewport is None
+    assert not window.findChildren(Viewport)
+    window._with_model(window.viewer.cycle_display)()  # no model: nothing happens
+    assert window.viewer._viewport is None
+    open_and_wait(window, samples[0])
+    assert window.viewer._viewport is not None and window.findChildren(Viewport)

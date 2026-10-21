@@ -227,11 +227,16 @@ class MainWindow(QMainWindow):
         self._shortcut("Alt+Right", lambda: self.step(1))
         self._shortcut("PgUp", lambda: self.step(-1))
         self._shortcut("PgDown", lambda: self.step(1))
-        self._shortcut("Ctrl+Shift+S", self.viewer.save_picture)
-        self._shortcut("Ctrl+Shift+C", self.viewer.copy_picture)
-        self._shortcut("O", self.viewer.toggle_orthographic)
-        self._shortcut("W", self.viewer.cycle_display)
+        self._shortcut("Ctrl+Shift+S", self._with_model(self.viewer.save_picture))
+        self._shortcut("Ctrl+Shift+C", self._with_model(self.viewer.copy_picture))
+        self._shortcut("O", self._with_model(self.viewer.toggle_orthographic))
+        self._shortcut("W", self._with_model(self.viewer.cycle_display))
         self._shortcut("I", self._toggle_inspector)
+
+    def _with_model(self, action):
+        """A viewer shortcut that does nothing until a model is open (it would otherwise
+        build the 3D view for nothing)."""
+        return lambda: action() if self.record is not None else None
 
     def _toggle_inspector(self):
         if self.stack.currentIndex() == self.VIEWER:
@@ -241,7 +246,7 @@ class MainWindow(QMainWindow):
         menu = QMenu(self)
         entries = [
             (_("Open a model…"), "Ctrl+O", lambda: self.open_file()),
-            (_("Save picture…"), "Ctrl+Shift+S", lambda: self.viewer.save_picture()),
+            (_("Save picture…"), "Ctrl+Shift+S", self._with_model(self.viewer.save_picture)),
             None,
             (_("Settings…"), "Ctrl+,", self.open_settings),
             (_("Check for updates…"), None, lambda: self.updater.check_now()),

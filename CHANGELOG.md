@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] - 2026-10-21
+- The buttons on the Home page (and everything else outside the 3D view) react without lag:
+  the 3D view is now only created when the first model is opened. A window that holds an
+  OpenGL widget is drawn through the graphics card on every repaint, which made even a hover
+  highlight heavier.
+
 ## [0.1.3] - 2026-10-21
 - Opening a second model while the first is still being checked can no longer mix up their
   data (the mesh check is now tied to the model it belongs to), and closing the window waits
