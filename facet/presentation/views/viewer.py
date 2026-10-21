@@ -13,13 +13,15 @@ from PySide6.QtWidgets import (
 from ...application.errors import ApplicationError
 from ...application.services import Services
 from .. import theme
+from .. import uiscale
+from ..uiscale import px
 from ..i18n import N_, _, plural
 from ..measures import Measures
 from ..viewport import SWATCHES, Viewport
 from .common import Card, Page, Segmented, button, caption, icon_button, label, primary_button
 
 N_("Distance"), N_("Angle"), N_("Supplement"), N_("Diameter"), N_("Radius")  # measurement names
-INSPECTOR_WIDTH = 340
+INSPECTOR_WIDTH = 352  # at 100%
 
 
 def hint(text: str) -> QLabel:
@@ -82,7 +84,7 @@ class ViewerPage(Page):
         self.analysis = None
         self.shading = None
         self.measured: list = []
-        self.root.setSpacing(12)
+        self.root.setSpacing(px(12))
 
         self.previous = icon_button("chevron-left", _("Previous model in the folder  (Alt+Left)"))
         self.next = icon_button("chevron-right", _("Next model in the folder  (Alt+Right)"))
@@ -101,10 +103,10 @@ class ViewerPage(Page):
 
         self.root.addWidget(self._toolbar())
         body = QHBoxLayout()
-        body.setSpacing(12)
+        body.setSpacing(px(12))
         frame = QFrame(objectName="card")
         self._frame_layout = QVBoxLayout(frame)
-        self._frame_layout.setContentsMargins(2, 2, 2, 2)
+        self._frame_layout.setContentsMargins(px(2), px(2), px(2), px(2))
         body.addWidget(frame, 1)
         self.inspector = self._inspector()
         body.addWidget(self.inspector)
@@ -131,8 +133,8 @@ class ViewerPage(Page):
     def _toolbar(self) -> QWidget:
         bar = QFrame(objectName="card")
         row = QHBoxLayout(bar)
-        row.setContentsMargins(10, 6, 10, 6)
-        row.setSpacing(8)
+        row.setContentsMargins(px(10), px(6), px(10), px(6))
+        row.setSpacing(px(8))
         self.display = Segmented([(0, _("Solid")), (1, _("Edges")), (2, _("Wire"))])
         self.display.set_value(0)
         self.display.changed.connect(self._display_changed)
@@ -176,8 +178,8 @@ class ViewerPage(Page):
     def _inspector(self) -> QScrollArea:
         holder = QWidget()
         column = QVBoxLayout(holder)
-        column.setContentsMargins(0, 0, 4, 0)
-        column.setSpacing(12)
+        column.setContentsMargins(0, 0, px(4), 0)
+        column.setSpacing(px(12))
         for card in (self._details_card(), self._health_card(), self._measure_card(),
                      self._section_card(), self._look_card()):
             column.addWidget(card)
@@ -185,7 +187,7 @@ class ViewerPage(Page):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll.setFixedWidth(INSPECTOR_WIDTH + 18)
+        scroll.setFixedWidth(px(INSPECTOR_WIDTH + 18))
         scroll.setWidget(holder)
         return scroll
 
@@ -242,8 +244,8 @@ class ViewerPage(Page):
         card.add(self.snap)
         card.add(hint(_("Pick a tool, then click points on the model. Angle: the corner is the second point. Hole: three points around it.")))
         self.list = QListWidget(objectName="recent")
-        self.list.setMinimumHeight(110)
-        self.list.setMaximumHeight(200)
+        self.list.setMinimumHeight(px(110))
+        self.list.setMaximumHeight(px(200))
         self.list.currentRowChanged.connect(lambda _row: self._list_buttons())
         card.add(self.list)
         row = QHBoxLayout()
@@ -281,15 +283,16 @@ class ViewerPage(Page):
     def _look_card(self) -> Card:
         card = Card(_("Look"))
         row = QHBoxLayout()
-        row.setSpacing(6)
+        row.setSpacing(px(6))
         self.swatches = []
         for name, colour in SWATCHES:
             b = QToolButton(checkable=True, toolTip=_(name))
-            b.setFixedSize(30, 30)
+            b.setFixedSize(px(30), px(30))
             b.setCursor(Qt.PointingHandCursor)
-            b.setStyleSheet(f"QToolButton {{ background: {colour}; border: 2px solid transparent;"
-                            f" border-radius: 15px; padding: 0; }}"
-                            f"QToolButton:checked {{ border: 3px solid {theme.current().accent}; }}")
+            b.setStyleSheet(uiscale.scale_stylesheet(
+                f"QToolButton {{ background: {colour}; border: 2px solid transparent;"
+                f" border-radius: 15px; padding: 0; }}"
+                f"QToolButton:checked {{ border: 3px solid {theme.current().accent}; }}"))
             b.clicked.connect(lambda _c=False, c=colour, btn=b: self._colour(c, btn))
             self.swatches.append(b)
             row.addWidget(b)

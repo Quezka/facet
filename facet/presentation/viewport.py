@@ -6,7 +6,7 @@ from array import array
 
 from PySide6.QtCore import QPointF, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QFont, QFontMetrics, QImage, QMatrix4x4, QPainter, QPen,
-                           QPolygonF, QVector3D, QVector4D)
+                           QPolygonF, QSurfaceFormat, QVector3D, QVector4D)
 from PySide6.QtOpenGL import (QOpenGLBuffer, QOpenGLFramebufferObject, QOpenGLShader,
                               QOpenGLShaderProgram)
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -16,6 +16,7 @@ from ..application.errors import ApplicationError
 from . import shaders
 from .camera import Camera
 from .i18n import N_, _
+from .uiscale import current as scale, px
 
 GL_DEPTH_TEST, GL_BLEND, GL_CULL_FACE = 0x0B71, 0x0BE2, 0x0B44
 GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT = 0x4000, 0x100
@@ -65,7 +66,11 @@ class Viewport(QOpenGLWidget):
         self.models = models
         self.setFocusPolicy(Qt.StrongFocus)
         self.setMouseTracking(True)
-        self.setMinimumSize(320, 260)
+        self.setMinimumSize(px(320), px(260))
+        fmt = QSurfaceFormat()  # smooth edges and a depth buffer, for this widget only: the rest
+        fmt.setDepthBufferSize(24)  # of the window stays an ordinary, cheap-to-repaint window
+        fmt.setSamples(4)
+        self.setFormat(fmt)
         self.camera = Camera()
         self.failure: str | None = None
 
@@ -557,16 +562,16 @@ class Viewport(QOpenGLWidget):
 
     def _label(self, painter: QPainter, at: QPointF, text: str, accent: bool = False):
         font = QFont(painter.font())
-        font.setPointSizeF(max(font.pointSizeF(), 10.5))
+        font.setPointSizeF(max(font.pointSizeF(), 10.5 * scale()))
         font.setBold(True)
         painter.setFont(font)
         metrics = QFontMetrics(font)
-        width, height = metrics.horizontalAdvance(text) + 16, metrics.height() + 8
+        width, height = metrics.horizontalAdvance(text) + px(16), metrics.height() + px(8)
         x = min(max(at.x() - width / 2, 4), self.width() - width - 4)
         y = min(max(at.y() - height / 2, 4), self.height() - height - 4)
         painter.setPen(QPen(self.palette_colors["accent"] if accent else self.palette_colors["text"], 1.5))
         painter.setBrush(self.palette_colors["surface"])
-        painter.drawRoundedRect(x, y, width, height, 7, 7)
+        painter.drawRoundedRect(x, y, width, height, px(7), px(7))
         painter.drawText(int(x), int(y), int(width), int(height), Qt.AlignCenter, text)
 
     def _paint_overlay(self, painter: QPainter):
@@ -607,11 +612,11 @@ class Viewport(QOpenGLWidget):
     def _dot(self, painter, at: QPointF, text: str = ""):
         painter.setPen(QPen(self.palette_colors["surface"], 2))
         painter.setBrush(self.palette_colors["accent"])
-        painter.drawEllipse(at, 6, 6)
+        painter.drawEllipse(at, px(6), px(6))
         if text:
             font = QFont(painter.font())
             font.setBold(True)
-            font.setPointSizeF(9)
+            font.setPointSizeF(9 * scale())
             painter.setFont(font)
             painter.setPen(self.palette_colors["accent"])
             painter.drawText(at + QPointF(9, -9), text)
@@ -667,7 +672,7 @@ class Viewport(QOpenGLWidget):
 
     def _paint_gizmo(self, painter):
         view = self.camera.view_matrix()
-        origin = QPointF(46, self.height() - 46)
+        origin = QPointF(px(46), self.height() - px(46))
         axes = [("X", (1, 0, 0), "#e5484d"), ("Y", (0, 1, 0), "#30a46c"), ("Z", (0, 0, 1), "#3e63dd")]
         projected = []
         for name, vec, colour in axes:
@@ -677,10 +682,10 @@ class Viewport(QOpenGLWidget):
         font.setBold(True)
         painter.setFont(font)
         for _z, name, mapped, colour in sorted(projected, key=lambda t: t[0]):
-            tip = origin + QPointF(mapped.x(), -mapped.y()) * 30
+            tip = origin + QPointF(mapped.x(), -mapped.y()) * px(30)
             painter.setPen(QPen(QColor(colour), 3, Qt.SolidLine, Qt.RoundCap))
             painter.drawLine(origin, tip)
-            painter.drawText(tip + QPointF(-5, 5) + QPointF(mapped.x(), -mapped.y()) * 7, name)
+            painter.drawText(tip + QPointF(-px(5), px(5)) + QPointF(mapped.x(), -mapped.y()) * px(7), name)
 
     def _paint_scale(self, painter):
         text = _("Grid: {step}").format(step=self.format_length(self.grid_step))

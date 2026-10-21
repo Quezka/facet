@@ -4,7 +4,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from PySide6.QtGui import QIcon, QSurfaceFormat
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 
 from .. import APP_ID
@@ -17,14 +17,14 @@ def create_application(argv: list[str]) -> QApplication:
     QApplication.setApplicationName("Facet")
     QApplication.setOrganizationName("Facet")
     QApplication.setDesktopFileName(APP_ID)
-    if QApplication.instance() is None:
-        uiscale.apply_before_app()  # Qt reads the scale factor once, as the app is created
-        fmt = QSurfaceFormat()  # smooth edges and a depth buffer for the 3D view
-        fmt.setDepthBufferSize(24)
-        fmt.setSamples(4)
-        QSurfaceFormat.setDefaultFormat(fmt)
     app = QApplication.instance() or QApplication(argv)
+    screen = app.primaryScreen()
+    uiscale.configure(screen.size().height() if screen else None)
     app.setStyle("Fusion")
+    font = app.font()
+    uiscale.base_pt = font.pointSizeF()
+    font.setPointSizeF(font.pointSizeF() * uiscale.current())  # the interface is built at its size
+    app.setFont(font)
     app.setWindowIcon(QIcon(str(APP_ICON)))
     i18n.install(app=app)  # before any window is built: texts are translated as they're made
     theme.install(app)

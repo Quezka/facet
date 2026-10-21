@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5] - 2026-10-21
+- The interface is built at its size instead of being magnified by Qt: text, icons, spacing and
+  the style sheet are multiplied by the chosen scale (Settings, applies after a restart). This
+  keeps the 3D view and repaints at whole pixels. A `QT_SCALE_FACTOR` you set yourself still wins.
+- Fixed: dragging in the 3D view turned the model the wrong way sideways; dragging right now
+  turns it to the right.
+
 ## [0.1.4] - 2026-10-21
 - The buttons on the Home page (and everything else outside the 3D view) react without lag:
   the 3D view is now only created when the first model is opened. A window that holds an

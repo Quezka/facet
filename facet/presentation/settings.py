@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QCheckBox, QComboBox, QDialog, QHBoxLayout, QPushB
 from . import i18n, theme, uiscale
 from .background import restart_app
 from .fit import scrollable
+from .uiscale import px
 from .i18n import _
 from .measures import DECIMAL_CHOICES
 from .views.common import Card, Segmented, caption, label
@@ -17,7 +18,7 @@ class SettingsDialog(QDialog):
         self.services = services
         self.measures = measures
         self.setWindowTitle(_("Settings"))
-        self.setMinimumWidth(460)
+        self.setMinimumWidth(px(460))
         manager = theme.manager()
         appearance = Card(_("Appearance"))
         mode = Segmented([("system", _("System")), ("light", _("Light")), ("dark", _("Dark"))])
@@ -82,8 +83,8 @@ class SettingsDialog(QDialog):
         row.addStretch()
         row.addWidget(close)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 16)
-        layout.setSpacing(14)
+        layout.setContentsMargins(px(20), px(20), px(20), px(16))
+        layout.setSpacing(px(14))
         for card in (appearance, numbers, language, size, updates):
             layout.addWidget(card)
         layout.addLayout(row)

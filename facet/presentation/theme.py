@@ -7,7 +7,7 @@ from PySide6.QtCore import QObject, QSettings, Qt, Signal
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QApplication
 
-from . import icons
+from . import icons, uiscale
 
 
 @dataclass(frozen=True)
@@ -151,8 +151,8 @@ def set_icon(widget, name: str, role: str = "muted", checked_role: str | None = 
     """Give a button a line icon that recolours with the theme."""
     def apply(t: Theme):
         widget.setIcon(icons.icon(name, getattr(t, role),
-                                  getattr(t, checked_role) if checked_role else None, size,
-                                  disabled(t)))
+                                  getattr(t, checked_role) if checked_role else None,
+                                  uiscale.px(size), disabled(t)))
     themed(apply)
 
 
@@ -179,8 +179,8 @@ def stylesheet(t: Theme) -> str:
     chevron = icons.icon_file("chevron-down", t.muted)
     chevron_up = icons.icon_file("chevron-up", t.muted)
     r = RADIUS
-    return f"""
-    * {{ outline: none; }}
+    return uiscale.scale_stylesheet(f"""
+    * {{ outline: none; {uiscale.font_rule()} }}
     QMainWindow, QDialog {{ background: {t.bg}; }}
     QToolTip {{ background: {t.raised}; color: {t.text}; border: 1px solid {t.border};
                border-radius: 6px; padding: 4px 8px; }}
@@ -355,4 +355,4 @@ def stylesheet(t: Theme) -> str:
     QSplitter::handle {{ background: transparent; }}
     QCalendarWidget QWidget {{ alternate-background-color: {t.raised}; }}
     QCalendarWidget QToolButton {{ border: none; background: transparent; }}
-    """
+    """)

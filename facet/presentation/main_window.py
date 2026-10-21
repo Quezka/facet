@@ -16,6 +16,7 @@ from ..demo import write_samples
 from . import theme
 from .background import run_in_background
 from .fit import clamp_window
+from .uiscale import px
 from .i18n import N_, _
 from .icons import APP_ICON
 from .measures import Measures
@@ -29,24 +30,24 @@ class Sidebar(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("sidebar")
-        self.setFixedWidth(206)
+        self.setFixedWidth(px(206))
         self.group = QButtonGroup(self)
         self.group.setExclusive(True)
         brand_icon = QLabel()
-        brand_icon.setPixmap(QIcon(str(APP_ICON)).pixmap(28, 28))
+        brand_icon.setPixmap(QIcon(str(APP_ICON)).pixmap(px(28), px(28)))
         brand = QHBoxLayout()
-        brand.setContentsMargins(12, 4, 12, 0)
-        brand.setSpacing(10)
+        brand.setContentsMargins(px(12), px(4), px(12), 0)
+        brand.setSpacing(px(10))
         brand.addWidget(brand_icon)
         brand.addWidget(QLabel(_("Facet"), objectName="brand"))
         brand.addStretch()
         self.nav = QVBoxLayout()
-        self.nav.setSpacing(2)
+        self.nav.setSpacing(px(2))
         self.footer = QVBoxLayout()
-        self.footer.setSpacing(2)
+        self.footer.setSpacing(px(2))
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(12, 20, 12, 14)
-        layout.setSpacing(6)
+        layout.setContentsMargins(px(12), px(20), px(12), px(14))
+        layout.setSpacing(px(6))
         layout.addLayout(brand)
         layout.addSpacing(18)
         layout.addLayout(self.nav)
@@ -57,7 +58,7 @@ class Sidebar(QFrame):
         button = QToolButton(objectName="nav", text=f"  {text}", checkable=checkable)
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        button.setIconSize(QSize(18, 18))
+        button.setIconSize(QSize(px(18), px(18)))
         button.setCursor(Qt.PointingHandCursor)
         theme.set_icon(button, icon_name, "muted", "accent" if checkable else None)
         return button
@@ -82,7 +83,7 @@ class MainWindow(QMainWindow):
         self.record = None
         self.siblings: list[str] = []
         self._opening = 0
-        clamp_window(self, 1320, 840, 1000, 640)
+        clamp_window(self, px(1320), px(840), px(1000), px(640))
         self.setAcceptDrops(True)
 
         self.home = HomePage()

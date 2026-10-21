@@ -32,7 +32,7 @@ class Camera:
         self.yaw, self.pitch = VIEWS[name]
 
     def orbit(self, dx: float, dy: float):
-        self.yaw -= dx * 0.4
+        self.yaw += dx * 0.4  # drag right: the model turns to the right
         self.pitch = max(-89.9, min(89.9, self.pitch + dy * 0.4))
 
     def eye(self) -> QVector3D:

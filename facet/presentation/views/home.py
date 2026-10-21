@@ -7,6 +7,7 @@ from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import QGridLayout, QListWidget, QListWidgetItem, QSizePolicy, QToolButton
 
 from .. import theme
+from ..uiscale import px
 from ..i18n import _
 from .common import Card, Page, label
 
@@ -22,7 +23,7 @@ class HomePage(Page):
 
         start = Card(_("Start"))
         grid = QGridLayout()
-        grid.setSpacing(10)
+        grid.setSpacing(px(10))
         tiles = (
             ("folder", _("Open a model…"), _("STL, OBJ, PLY or 3MF"),
              lambda: self.openRequested.emit("")),
@@ -35,8 +36,8 @@ class HomePage(Page):
             tile = QToolButton(objectName="startTile")
             tile.setText(f"{text}\n{detail}")
             tile.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-            tile.setIconSize(QSize(30, 30))
-            tile.setMinimumSize(210, 120)
+            tile.setIconSize(QSize(px(30), px(30)))
+            tile.setMinimumSize(px(210), px(120))
             tile.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             tile.setCursor(Qt.PointingHandCursor)
             theme.set_icon(tile, icon, "accent", size=30)

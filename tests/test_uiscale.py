@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from facet.presentation import uiscale
@@ -24,22 +22,26 @@ def test_the_choice_is_remembered_and_junk_is_ignored(monkeypatch):
     assert uiscale.chosen() == "auto"
 
 
-def test_the_scale_is_handed_to_qt_unless_already_set(monkeypatch):
-    monkeypatch.setattr(uiscale, "chosen", lambda: "150")
-    monkeypatch.delenv("QT_SCALE_FACTOR", raising=False)
-    uiscale.apply_before_app()
-    assert os.environ["QT_SCALE_FACTOR"] == "1.5"
-    monkeypatch.setenv("QT_SCALE_FACTOR", "2")
-    uiscale.apply_before_app()
-    assert os.environ["QT_SCALE_FACTOR"] == "2"
+def test_sizes_and_style_sheets_are_built_at_the_chosen_scale(monkeypatch):
+    monkeypatch.setattr(uiscale, "_factor", 0.8)
+    assert uiscale.px(10) == 8 and uiscale.px(1) == 1 and uiscale.px(0) == 0  # a line never vanishes
+    qss = "QLabel { padding: 10px 20px; font-size: 19pt; border: 1px solid #1e3a8a; margin: 0; }"
+    assert uiscale.scale_stylesheet(qss) == (
+        "QLabel { padding: 8px 16px; font-size: 15.2pt; border: 1px solid #1e3a8a; margin: 0; }")
+    monkeypatch.setattr(uiscale, "_factor", 1.0)
+    assert uiscale.scale_stylesheet(qss) == qss
 
 
-def test_a_100_percent_choice_leaves_qt_alone(monkeypatch):
-    monkeypatch.setattr(uiscale, "chosen", lambda: "100")
+def test_configure_follows_the_choice_and_leaves_a_forced_qt_scale_alone(monkeypatch):
     monkeypatch.delenv("QT_SCALE_FACTOR", raising=False)
-    uiscale.apply_before_app()
-    assert "QT_SCALE_FACTOR" not in os.environ
-    monkeypatch.undo()
+    monkeypatch.setattr(uiscale, "chosen", lambda: "130")
+    assert uiscale.configure(1080) == 1.3 and uiscale.px(10) == 13
+    monkeypatch.setattr(uiscale, "chosen", lambda: "auto")
+    assert uiscale.configure(768) == 0.85
+    monkeypatch.setenv("QT_SCALE_FACTOR", "2")  # forced by hand: Qt scales, so we don't
+    assert uiscale.configure(768) == 1.0
+    monkeypatch.delenv("QT_SCALE_FACTOR")
+    uiscale.configure(1080)
 
 
 @pytest.mark.parametrize("height", [768, 1080])
@@ -60,47 +62,3 @@ def test_windows_and_dialogs_stay_inside_the_screen(height, monkeypatch):
         column.addWidget(QLabel(f"row {i}"))
     fit.scrollable(dialog)
     assert dialog.height() <= int((height - 40) * 0.9)
-
-
-def test_the_screen_probe_keeps_the_app_names():
-    """The desktop file name groups a window with its dock icon; the probe used to wipe it."""
-    import subprocess
-    import sys
-    code = """
-import os
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ.pop("QT_SCALE_FACTOR", None)
-from PySide6.QtWidgets import QApplication
-from facet.presentation import uiscale
-QApplication.setApplicationName("Name")
-QApplication.setOrganizationName("Org")
-QApplication.setDesktopFileName("io.example.Name")
-uiscale.apply_before_app()
-app = QApplication([])
-print(app.applicationName(), app.organizationName(), app.desktopFileName())
-"""
-    done = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
-                          timeout=60)
-    assert done.stdout.strip().endswith("Name Org io.example.Name"), done.stdout + done.stderr
-
-
-def test_a_restart_picks_up_the_new_choice(monkeypatch):
-    """The restarted app inherits the scale the old one set: it must not mistake it for
-    one the user set by hand."""
-    from PySide6.QtCore import QSettings
-    monkeypatch.delenv("QT_SCALE_FACTOR", raising=False)
-    monkeypatch.delenv(uiscale.MARK, raising=False)
-    QSettings().setValue("ui_scale", "130")
-    uiscale.apply_before_app()
-    assert os.environ["QT_SCALE_FACTOR"] == "1.3"
-    QSettings().setValue("ui_scale", "80")  # chosen in Settings, then "Restart now"
-    uiscale.apply_before_app()
-    assert os.environ["QT_SCALE_FACTOR"] == "0.8"
-    QSettings().setValue("ui_scale", "100")
-    uiscale.apply_before_app()
-    assert "QT_SCALE_FACTOR" not in os.environ
-    monkeypatch.setenv("QT_SCALE_FACTOR", "2")  # yours: left alone
-    QSettings().setValue("ui_scale", "80")
-    uiscale.apply_before_app()
-    assert os.environ["QT_SCALE_FACTOR"] == "2"
-    QSettings().remove("ui_scale")

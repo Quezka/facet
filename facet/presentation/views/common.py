@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 from .. import theme
+from ..uiscale import px
 
 
 class Page(QWidget):
@@ -19,16 +20,16 @@ class Page(QWidget):
         self.setObjectName("page")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.root = QVBoxLayout(self)
-        self.root.setContentsMargins(*margins)
-        self.root.setSpacing(16)
+        self.root.setContentsMargins(*(px(m) for m in margins))
+        self.root.setSpacing(px(16))
         self.title = QLabel(objectName="pageTitle")
         self.subtitle = QLabel(objectName="pageSubtitle")
         titles = QVBoxLayout()
-        titles.setSpacing(2)
+        titles.setSpacing(px(2))
         titles.addWidget(self.title)
         titles.addWidget(self.subtitle)
         self.header = QHBoxLayout()
-        self.header.setSpacing(8)
+        self.header.setSpacing(px(8))
         self.header.addLayout(titles)
         self.header.addStretch()
         self.root.addLayout(self.header)
@@ -45,10 +46,10 @@ class Card(QFrame):
         super().__init__(parent)
         self.setObjectName("card")
         self.body = QVBoxLayout(self)
-        self.body.setContentsMargins(padding, padding, padding, padding)
-        self.body.setSpacing(10)
+        self.body.setContentsMargins(px(padding), px(padding), px(padding), px(padding))
+        self.body.setSpacing(px(10))
         self.title_row = QHBoxLayout()
-        self.title_row.setSpacing(8)
+        self.title_row.setSpacing(px(8))
         if title:
             self.title_label = QLabel(title, objectName="cardTitle")
             self.title_row.addWidget(self.title_label)
@@ -70,8 +71,8 @@ class Segmented(QFrame):
         self.setObjectName("segmented")
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         row = QHBoxLayout(self)
-        row.setContentsMargins(3, 3, 3, 3)
-        row.setSpacing(2)
+        row.setContentsMargins(px(3), px(3), px(3), px(3))
+        row.setSpacing(px(2))
         self.group = QButtonGroup(self)
         self.values = []
         for i, (value, text) in enumerate(options):
@@ -80,7 +81,7 @@ class Segmented(QFrame):
             # Room for the text in bold (as it is when chosen), so choosing doesn't clip it.
             bold = QFont(b.font())
             bold.setBold(True)
-            b.setMinimumWidth(QFontMetrics(bold).horizontalAdvance(text) + 30)
+            b.setMinimumWidth(QFontMetrics(bold).horizontalAdvance(text) + px(30))
             self.group.addButton(b, i)
             self.values.append(value)
             row.addWidget(b)

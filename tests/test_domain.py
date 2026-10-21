@@ -129,3 +129,14 @@ def _sphere(segments, rings):
             if r < rings - 1:
                 tris.append((b, c, d))
     return tris
+
+
+def test_dragging_right_turns_the_model_to_the_right():
+    from facet.presentation.camera import Camera
+    camera = Camera()
+    camera.frame((0, 0, 0), (10, 10, 10))
+    camera.look_from("front")
+    before = camera.project((5, 0, 5), 800, 600)[0]  # the middle of the front face
+    camera.orbit(50, 0)                              # drag to the right
+    after = camera.project((5, 0, 5), 800, 600)[0]
+    assert after > before                            # the face in front moved right on screen

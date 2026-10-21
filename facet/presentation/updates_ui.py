@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from ..application.errors import ApplicationError
 from ..application.services import AvailableUpdate, Services
 from .background import restart_app
+from .uiscale import px
 from .i18n import _
 from .background import run_in_background
 
@@ -81,7 +82,7 @@ class UpdateDialog(QDialog):
         self.update_info = update
         self._worker = None
         self.setWindowTitle(_("Update available"))
-        self.setMinimumSize(520, 420)
+        self.setMinimumSize(px(520), px(420))
 
         title = QLabel(_("Facet {version} is available").format(version=update.version),
                        objectName="sheetTitle")
@@ -116,8 +117,8 @@ class UpdateDialog(QDialog):
         buttons.addWidget(self.go_btn)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(22, 20, 22, 18)
-        layout.setSpacing(10)
+        layout.setContentsMargins(px(22), px(20), px(22), px(18))
+        layout.setSpacing(px(10))
         layout.addWidget(title)
         layout.addWidget(current)
         layout.addWidget(notes, 1)
