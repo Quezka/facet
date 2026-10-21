@@ -4,7 +4,7 @@ import pytest
 
 pytest.importorskip("PySide6")
 
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QThreadPool
 from PySide6.QtTest import QTest
 
 from facet.demo import write_samples
@@ -39,6 +39,7 @@ def window(app, services):
     w = MainWindow(services)
     w.show()
     yield w
+    QThreadPool.globalInstance().waitForDone()  # no job may outlive the window it reports to
     w.close()
 
 

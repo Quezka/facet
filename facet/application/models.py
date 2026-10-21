@@ -1,6 +1,7 @@
 """Opening, inspecting and measuring a model."""
 from __future__ import annotations
 
+import threading
 from pathlib import Path
 
 from ..domain import geometry
@@ -23,8 +24,9 @@ class ModelService:
         self._reader = reader
         self._settings = settings
         self._mesh: Mesh | None = None
-        self._topology: Topology | None = None
+        self._topology: tuple[int, Topology] | None = None  # (token of its model, welded mesh)
         self._token = 0
+        self._busy = threading.Lock()  # one heavy computation at a time, per model
 
     # ---- opening -------------------------------------------------------------------
     def open(self, path: str) -> ModelRecord:
@@ -32,7 +34,7 @@ class ModelService:
         mesh = self._reader.read(path)
         lo, hi = bounds(mesh)
         self._token += 1
-        self._mesh, self._topology = mesh, None
+        self._mesh = mesh
         self._remember(path)
         return ModelRecord(
             self._token, path, Path(path).name, Path(path).suffix.lstrip(".").upper(),
@@ -53,21 +55,24 @@ class ModelService:
         return self._mesh
 
     # ---- inspecting ----------------------------------------------------------------
-    def _welded(self, mesh: Mesh) -> Topology | None:
+    def _welded(self, mesh: Mesh, token: int) -> Topology | None:
+        """The welded mesh of the model with this token, made once. The caller holds `_busy`,
+        so a job for a model that was just replaced can't mix up with the new one's."""
         if mesh.triangle_count > CHECK_LIMIT:
             return None
-        if self._topology is None:
-            self._topology = weld(mesh)
-        return self._topology
+        if self._topology is None or self._topology[0] != token:
+            self._topology = (token, weld(mesh))
+        return self._topology[1]
 
     def analyse(self) -> AnalysisRecord:
         mesh, token = self._need(), self._token
         solid = solid_properties(mesh)
-        topology = self._welded(mesh)
-        if topology is None:
+        with self._busy:
+            topology = self._welded(mesh, token)
+            health = check_health(mesh, topology) if topology is not None else None
+        if health is None:
             return AnalysisRecord(token, solid.volume, solid.area, solid.centroid,
                                   solid.volume < 0, False, 0, 0, 0, 0, 0, False)
-        health = check_health(mesh, topology)
         return AnalysisRecord(
             token, solid.volume, solid.area, solid.centroid, solid.volume < 0, True,
             health.vertices, health.shells, health.open_edges, health.non_manifold_edges,
@@ -76,13 +81,14 @@ class ModelService:
     def shading(self, smooth: bool, edges: bool) -> ShadingRecord:
         """Smooth normals and outline edges, for models small enough to work them out."""
         mesh, token = self._need(), self._token
-        topology = self._welded(mesh)
         normals = codes = None
-        if topology is not None:
-            if smooth and mesh.triangle_count <= SMOOTH_LIMIT:
-                normals = smooth_normals(mesh, topology)
-            if edges:
-                codes = feature_edges(mesh, topology)
+        with self._busy:
+            topology = self._welded(mesh, token)
+            if topology is not None:
+                if smooth and mesh.triangle_count <= SMOOTH_LIMIT:
+                    normals = smooth_normals(mesh, topology)
+                if edges:
+                    codes = feature_edges(mesh, topology)
         return ShadingRecord(token, normals, codes)
 
     def weight(self, volume: float, unit: str, material: str) -> float:

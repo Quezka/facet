@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import QSettings, QSize, Qt
+from PySide6.QtCore import QSettings, QSize, Qt, QThreadPool
 from PySide6.QtGui import QAction, QIcon, QKeySequence
 from PySide6.QtWidgets import (
     QButtonGroup, QFileDialog, QFrame, QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox,
@@ -285,5 +285,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         QSettings().setValue("window/geometry", self.saveGeometry())
+        QThreadPool.globalInstance().waitForDone(3000)  # let a running check finish first
         self.models.close()
         super().closeEvent(event)

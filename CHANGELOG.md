@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.3] - 2026-10-21
+- Opening a second model while the first is still being checked can no longer mix up their
+  data (the mesh check is now tied to the model it belongs to), and closing the window waits
+  for a running check. 0.1.2 was never published because of this; its fix is included here.
+
 ## [0.1.2] - 2026-10-21
 - Fixed: choosing an interface size in Settings and pressing "Restart" now really applies it
   (the restarted app used to mistake the old size for one you had forced from the command line).
