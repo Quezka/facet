@@ -14,7 +14,7 @@ from PySide6.QtCore import QSettings
 
 CHOICES = ("auto", "80", "90", "100", "115", "130", "150", "175", "200")  # percent
 AUTO_BELOW = 800  # screens up to this tall (like 1366x768) get the smaller interface
-SMALL = 0.85
+SMALL = 0.85  # the standard "automatic" size, on every screen
 
 _factor = 1.0
 base_pt = 0.0  # the system's text size, before scaling (set once the application exists)
@@ -32,7 +32,7 @@ def set_chosen(choice: str):
 def factor(choice: str, screen_height: int | None) -> float:
     """The scale factor for a choice; "auto" depends on how tall the screen is."""
     if choice == "auto":
-        return SMALL if screen_height and screen_height <= AUTO_BELOW else 1.0
+        return SMALL
     return int(choice) / 100 if choice in CHOICES else 1.0
 
 

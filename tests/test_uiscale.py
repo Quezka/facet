@@ -5,7 +5,7 @@ from facet.presentation import uiscale
 
 def test_automatic_scale_depends_on_the_screen():
     assert uiscale.factor("auto", 768) == 0.85  # small laptop screens get the smaller interface, like Quire
-    assert uiscale.factor("auto", 1080) == 1.0 and uiscale.factor("auto", None) == 1.0
+    assert uiscale.factor("auto", 1080) == 0.85 and uiscale.factor("auto", None) == 0.85
     assert uiscale.factor("115", 768) == 1.15 and uiscale.factor("200", 2160) == 2.0
     assert uiscale.factor("nonsense", 768) == 1.0
 

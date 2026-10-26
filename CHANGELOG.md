@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.10] - 2026-10-26
+
+The interface size set to Automatic is a compact 85% now (the shared toolkit's new standard; 80% and 90% are new choices). Larger sizes stay in Settings.
+
 ## [0.1.9] - 2026-10-26
 
 - Icons, translations and the dialog fitting come from the suite's shared toolkit; Enter now lets go of a one-line text box.
