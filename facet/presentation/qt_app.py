@@ -9,6 +9,8 @@ from PySide6.QtWidgets import QApplication
 
 from .. import APP_ID
 from ..application.services import Services
+from quezka_ui import leave_on_enter
+
 from . import i18n, theme, uiscale
 from .icons import APP_ICON
 
@@ -25,6 +27,7 @@ def create_application(argv: list[str]) -> QApplication:
     uiscale.base_pt = font.pointSizeF()
     font.setPointSizeF(font.pointSizeF() * uiscale.current())  # the interface is built at its size
     app.setFont(font)
+    leave_on_enter.install(app)  # Enter in a one-line box lets go of it
     app.setWindowIcon(QIcon(str(APP_ICON)))
     i18n.install(app=app)  # before any window is built: texts are translated as they're made
     theme.install(app)
