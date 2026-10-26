@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9] - 2026-10-26
+
+- Icons, translations and the dialog fitting come from the suite's shared toolkit; Enter now lets go of a one-line text box.
+
 ## [0.1.8] - 2026-10-21
 - (0.1.7 was never published: a new test broke the others. Same content, fixed.)
 - Windows: the installer gives `.stl`, `.obj`, `.ply` and `.3mf` the same Facet file icons as on
