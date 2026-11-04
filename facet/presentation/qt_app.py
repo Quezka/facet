@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication
 
 from .. import APP_ID
 from ..application.services import Services
-from quezka_ui import leave_on_enter
+from quezka_ui import fonts, kinetic, leave_on_enter
 
 from . import i18n, theme, uiscale
 from .icons import APP_ICON
@@ -23,11 +23,15 @@ def create_application(argv: list[str]) -> QApplication:
     screen = app.primaryScreen()
     uiscale.configure(screen.size().height() if screen else None)
     app.setStyle("Fusion")
+    family = fonts.load()
     font = app.font()
+    if family:
+        font.setFamily(family)
     uiscale.base_pt = font.pointSizeF()
     font.setPointSizeF(font.pointSizeF() * uiscale.current())  # the interface is built at its size
     app.setFont(font)
     leave_on_enter.install(app)  # Enter in a one-line box lets go of it
+    kinetic.install(app)  # a flick on a trackpad keeps gliding
     app.setWindowIcon(QIcon(str(APP_ICON)))
     i18n.install(app=app)  # before any window is built: texts are translated as they're made
     theme.install(app)

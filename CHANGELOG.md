@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.0] - 2026-11-04
+
+### Changed
+- A new look: Material 3 shapes and tonal colours, and the Manrope typeface. A flick on a trackpad now keeps gliding; a mouse wheel works as before.
+
 ## [0.1.10] - 2026-10-26
 
 The interface size set to Automatic is a compact 85% now (the shared toolkit's new standard; 80% and 90% are new choices). Larger sizes stay in Settings.

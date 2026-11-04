@@ -7,6 +7,8 @@ from PySide6.QtCore import QObject, QSettings, Qt, Signal
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QApplication
 
+from quezka_ui.theme import material
+
 from . import icons, uiscale
 
 
@@ -34,19 +36,19 @@ class Theme:
 # anything that matters (the other apps still use the lighter house palette).
 LIGHT = Theme(
     dark=False,
-    bg="#f3f4f7", surface="#ffffff", raised="#eceef3", sidebar="#e6e8ee",
+    bg="#f6f5fc", surface="#ffffff", raised="#e9e8f6", sidebar="#eeedf8",
     border="#b9bec9", hover="#dfe2ea",
     text="#0e1116", muted="#3f4654", faint="#5d6573",
-    accent="#4b4bc8", accent_hover="#3b3bb0", accent_soft="#d9d9f8", on_accent="#ffffff",
+    accent="#4b4bc8", accent_hover="#3b3bb0", accent_soft="#dddcfb", on_accent="#ffffff",
     danger="#c4262c", success="#1f7a4d",
 )
 
 DARK = Theme(
     dark=True,
-    bg="#0e0f11", surface="#17181b", raised="#212328", sidebar="#131416",
+    bg="#111119", surface="#1b1b25", raised="#28283a", sidebar="#16161f",
     border="#4a4e57", hover="#2c2f35",
     text="#f4f5f7", muted="#c3c8d2", faint="#98a0ad",
-    accent="#9a9bff", accent_hover="#b0b1ff", accent_soft="#33356a", on_accent="#0e0f11",
+    accent="#9a9bff", accent_hover="#b0b1ff", accent_soft="#35366b", on_accent="#0e0f11",
     danger="#ff7b80", success="#4fe39b",
 )
 
@@ -355,4 +357,4 @@ def stylesheet(t: Theme) -> str:
     QSplitter::handle {{ background: transparent; }}
     QCalendarWidget QWidget {{ alternate-background-color: {t.raised}; }}
     QCalendarWidget QToolButton {{ border: none; background: transparent; }}
-    """)
+    """ + ("" if t in (HIGH_LIGHT, HIGH_DARK) else material(t)))
