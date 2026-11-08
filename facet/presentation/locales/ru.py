@@ -219,4 +219,6 @@ MESSAGES = {
     "This 3MF file is damaged.": "Файл 3MF повреждён.",
     "This 3MF file has no model in it.": "В файле 3MF нет модели.",
     "This 3MF file has no mesh in it.": "В файле 3MF нет сетки.",
+    "Glass look": "Эффект стекла",
+    "Frosted, see-through surfaces over a soft wash of colour.": "Матовые полупрозрачные поверхности на мягком цветном фоне.",
 }

@@ -1,44 +1,37 @@
 """Settings: appearance, language, units and updates."""
 from __future__ import annotations
 
-from PySide6.QtWidgets import QCheckBox, QComboBox, QDialog, QHBoxLayout, QPushButton, QVBoxLayout
+from PySide6.QtWidgets import QComboBox, QPushButton
+from quezka_ui.settings import SettingsWindow
 
 from . import i18n, theme, uiscale
 from .background import restart_app
-from .fit import scrollable
 from .uiscale import px
 from .i18n import _
 from .measures import DECIMAL_CHOICES
-from .views.common import Card, Segmented, caption, label
+from .views.common import Segmented
 
 
-class SettingsDialog(QDialog):
+class SettingsDialog(SettingsWindow):
+    """Appearance, Numbers and Updates in the suite's Settings window."""
+
     def __init__(self, services, measures, updater=None, parent=None):
-        super().__init__(parent)
+        super().__init__(_("Settings"), _("Close"), parent, width=px(820), height=px(560))
         self.services = services
         self.measures = measures
-        self.setWindowTitle(_("Settings"))
-        self.setMinimumWidth(px(460))
         manager = theme.manager()
-        appearance = Card(_("Appearance"))
+
+        look = self.section(_("Appearance"), "palette")
+        card = look.card()
         mode = Segmented([("system", _("System")), ("light", _("Light")), ("dark", _("Dark"))])
         mode.set_value(manager.mode)
         mode.changed.connect(manager.set_mode)
-        appearance.add(mode)
-        contrast = QCheckBox(_("High contrast (black and white, thick lines)"))
-        contrast.setChecked(manager.contrast)
-        contrast.toggled.connect(manager.set_contrast)
-        appearance.add(contrast)
-
-        numbers = Card(_("Numbers"))
-        numbers.add(caption(_("Decimal places in measurements")))
-        decimals = Segmented([(n, str(n)) for n in DECIMAL_CHOICES])
-        decimals.set_value(measures.decimals)
-        decimals.changed.connect(self._decimals)
-        numbers.add(decimals)
-        numbers.add(label(_("The units (mm, cm, m, inches) are chosen next to the model."), "hint"))
-
-        language = Card(_("Language"))
+        card.row(_("Appearance"), mode)
+        card.switch(_("Glass look"), manager.glass,
+                    _("Frosted, see-through surfaces over a soft wash of colour."), manager.set_glass)
+        card.switch(_("High contrast (black and white, thick lines)"), manager.contrast,
+                    on_toggled=manager.set_contrast)
+        card = look.card()
         self.language = QComboBox()
         for code, name in i18n.LANGUAGES:
             self.language.addItem(_(name) if code == "" else name, code)
@@ -46,49 +39,35 @@ class SettingsDialog(QDialog):
         self.restart = QPushButton(_("Restart Facet now"))
         self.restart.hide()
         self.restart.clicked.connect(self._restart)
+        self.restart_size = self.restart
         self.language.currentIndexChanged.connect(self._language_changed)
-        language.add(caption(_("Interface language")))
-        language.add(self.language)
-        language.add(self.restart)
-
-        size = Card(_("Interface size"))
+        card.row(_("Interface language"), self.language, stretch_control=True)
         self.scale = QComboBox()
         for choice in uiscale.CHOICES:
             self.scale.addItem(_("Automatic") if choice == "auto" else f"{choice}%", choice)
         self.scale.setCurrentIndex(max(0, self.scale.findData(uiscale.chosen())))
         self.scale.currentIndexChanged.connect(self._scale_changed)
-        size.add(self.scale)
-        size.add(label(_("Applies after a restart. Automatic fits the size of your screen."), "hint"))
-        self.restart_size = QPushButton(_("Restart Facet now"))
-        self.restart_size.hide()
-        self.restart_size.clicked.connect(self._restart)
-        size.add(self.restart_size)
+        card.row(_("Interface size"), self.scale, _("Applies after a restart. Automatic fits the size of your screen."),
+                 stretch_control=True)
+        card.wide(self.restart)
 
-        updates = Card(_("Updates"))
-        auto = QCheckBox(_("Check for new versions once a day"))
-        auto.setChecked(services.updates.auto_check())
-        auto.toggled.connect(services.updates.set_auto_check)
-        updates.add(auto)
+        numbers = self.section(_("Numbers"), "ruler")
+        card = numbers.card()
+        decimals = Segmented([(n, str(n)) for n in DECIMAL_CHOICES])
+        decimals.set_value(measures.decimals)
+        decimals.changed.connect(self._decimals)
+        card.row(_("Decimal places in measurements"), decimals,
+                 _("The units (mm, cm, m, inches) are chosen next to the model."))
+
+        updates = self.section(_("Updates"), "download")
+        card = updates.card()
+        card.switch(_("Check for new versions once a day"), services.updates.auto_check(),
+                    on_toggled=services.updates.set_auto_check)
         check = QPushButton(_("Check now"))
         check.setEnabled(updater is not None)
         if updater is not None:
             check.clicked.connect(lambda: updater.check_now())
-        updates.add(check)
-        updates.add(label(_("You have version {version}.").format(
-            version=services.updates.current_version), "hint"))
-
-        close = QPushButton(_("Close"))
-        close.clicked.connect(self.accept)
-        row = QHBoxLayout()
-        row.addStretch()
-        row.addWidget(close)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(px(20), px(20), px(20), px(16))
-        layout.setSpacing(px(14))
-        for card in (appearance, numbers, language, size, updates):
-            layout.addWidget(card)
-        layout.addLayout(row)
-        scrollable(self)
+        card.row(_("You have version {version}.").format(version=services.updates.current_version), check)
 
     def _decimals(self, value):
         self.measures.set_decimals(value)

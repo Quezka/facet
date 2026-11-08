@@ -7,6 +7,7 @@ from PySide6.QtCore import QObject, QSettings, Qt, Signal
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QApplication
 
+from quezka_ui import theme as kit
 from quezka_ui.theme import material
 
 from . import icons, uiscale
@@ -30,26 +31,27 @@ class Theme:
     on_accent: str
     danger: str
     success: str
+    high_contrast: bool = False
 
 
 # Facet is meant to be easy on the eyes: darker text, firmer borders and no pale grey for
 # anything that matters (the other apps still use the lighter house palette).
 LIGHT = Theme(
     dark=False,
-    bg="#f6f5fc", surface="#ffffff", raised="#e9e8f6", sidebar="#eeedf8",
-    border="#b9bec9", hover="#dfe2ea",
-    text="#0e1116", muted="#3f4654", faint="#5d6573",
-    accent="#4b4bc8", accent_hover="#3b3bb0", accent_soft="#dddcfb", on_accent="#ffffff",
-    danger="#c4262c", success="#1f7a4d",
+    bg="#f3f2ff", surface="#ffffff", raised="#e9e8ff", sidebar="#eceaff",
+    border="#b3b6cc", hover="#dedcf7",
+    text="#0b0d14", muted="#343b4d", faint="#4d5466",
+    accent="#4f46e5", accent_hover="#4338ca", accent_soft="#dcdbff", on_accent="#ffffff",
+    danger="#d0262d", success="#127a46",
 )
 
 DARK = Theme(
     dark=True,
-    bg="#111119", surface="#1b1b25", raised="#28283a", sidebar="#16161f",
-    border="#4a4e57", hover="#2c2f35",
-    text="#f4f5f7", muted="#c3c8d2", faint="#98a0ad",
-    accent="#9a9bff", accent_hover="#b0b1ff", accent_soft="#35366b", on_accent="#0e0f11",
-    danger="#ff7b80", success="#4fe39b",
+    bg="#0e0e19", surface="#1a1a2b", raised="#27273f", sidebar="#13131f",
+    border="#4b4e66", hover="#2d2d47",
+    text="#f6f7fb", muted="#cbcfdd", faint="#a2a8bb",
+    accent="#a9a6ff", accent_hover="#c3c0ff", accent_soft="#3b3984", on_accent="#0b0b14",
+    danger="#ff7b80", success="#4ade80",
 )
 
 # "High contrast" in Settings: black on white / white on black, thick lines.
@@ -59,7 +61,7 @@ HIGH_LIGHT = Theme(
     border="#000000", hover="#dcdcdc",
     text="#000000", muted="#1a1a1a", faint="#333333",
     accent="#1f1fa8", accent_hover="#14147a", accent_soft="#cfcff7", on_accent="#ffffff",
-    danger="#a30000", success="#005a2b",
+    danger="#a30000", success="#005a2b", high_contrast=True,
 )
 
 HIGH_DARK = Theme(
@@ -68,7 +70,7 @@ HIGH_DARK = Theme(
     border="#ffffff", hover="#2e2e2e",
     text="#ffffff", muted="#e6e6e6", faint="#cccccc",
     accent="#ffd400", accent_hover="#ffe55c", accent_soft="#3a3300", on_accent="#000000",
-    danger="#ff8a8a", success="#6dffb0",
+    danger="#ff8a8a", success="#6dffb0", high_contrast=True,
 )
 
 RADIUS = 10
@@ -89,12 +91,18 @@ class ThemeManager(QObject):
         mode = QSettings().value("appearance", "system")
         self.mode = mode if mode in MODES else "system"
         self.contrast = str(QSettings().value("high_contrast", "false")).lower() == "true"
+        self.glass = str(QSettings().value("glass", "true")).lower() == "true"
         app.styleHints().colorSchemeChanged.connect(lambda _scheme: self.apply())
         self.apply()
 
     def set_contrast(self, on: bool):
         self.contrast = on
         QSettings().setValue("high_contrast", "true" if on else "false")
+        self.apply()
+
+    def set_glass(self, on: bool):
+        self.glass = on
+        QSettings().setValue("glass", "true" if on else "false")
         self.apply()
 
     def set_mode(self, mode: str):
@@ -108,9 +116,11 @@ class ThemeManager(QObject):
         else:
             dark = self.mode == "dark"
         self.theme = (HIGH_DARK if dark else HIGH_LIGHT) if self.contrast else (DARK if dark else LIGHT)
+        kit.GLASS = self.glass and not self.contrast  # the kit's glass layer, on Facet's own sheet
         self.app.setPalette(palette(self.theme))
         self.app.setStyleSheet(stylesheet(self.theme))
         self.changed.emit(self.theme)
+        kit.follow(self.theme)
 
 
 _manager: ThemeManager | None = None
@@ -357,4 +367,4 @@ def stylesheet(t: Theme) -> str:
     QSplitter::handle {{ background: transparent; }}
     QCalendarWidget QWidget {{ alternate-background-color: {t.raised}; }}
     QCalendarWidget QToolButton {{ border: none; background: transparent; }}
-    """ + ("" if t in (HIGH_LIGHT, HIGH_DARK) else material(t)))
+    """ + ("" if t in (HIGH_LIGHT, HIGH_DARK) else material(t) + kit.glass(t)) + kit.settings_css(t))
