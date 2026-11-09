@@ -220,5 +220,5 @@ MESSAGES = {
     "This 3MF file has no model in it.": "Questo file 3MF non contiene un modello.",
     "This 3MF file has no mesh in it.": "Questo file 3MF non contiene una mesh.",
     "Glass look": "Aspetto vetro",
-    "Frosted, see-through surfaces over a soft wash of colour.": "Superfici smerigliate e trasparenti su una leggera sfumatura di colore.",
+    "Menus, bars and headers blur what's under them.": 'Menu, barre e intestazioni sfocano ciò che sta sotto.',
 }

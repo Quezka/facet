@@ -33,7 +33,7 @@ def create_application(argv: list[str]) -> QApplication:
     leave_on_enter.install(app)  # Enter in a one-line box lets go of it
     kinetic.install(app)  # a flick on a trackpad keeps gliding
     from quezka_ui import glass
-    glass.install(app)  # menus, lists and tooltips blur what's under them; Mica on Windows 11
+    glass.install(app, see_through=False)  # glass menus and lists; a 3D viewer never lets the desktop through
     app.setWindowIcon(QIcon(str(APP_ICON)))
     i18n.install(app=app)  # before any window is built: texts are translated as they're made
     theme.install(app)

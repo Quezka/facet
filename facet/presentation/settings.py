@@ -28,7 +28,7 @@ class SettingsDialog(SettingsWindow):
         mode.changed.connect(manager.set_mode)
         card.row(_("Appearance"), mode)
         card.switch(_("Glass look"), manager.glass,
-                    _("Frosted, see-through surfaces over a soft wash of colour."), manager.set_glass)
+                    _("Menus, bars and headers blur what's under them."), manager.set_glass)
         card.switch(_("High contrast (black and white, thick lines)"), manager.contrast,
                     on_toggled=manager.set_contrast)
         card = look.card()

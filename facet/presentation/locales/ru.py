@@ -220,5 +220,5 @@ MESSAGES = {
     "This 3MF file has no model in it.": "В файле 3MF нет модели.",
     "This 3MF file has no mesh in it.": "В файле 3MF нет сетки.",
     "Glass look": "Эффект стекла",
-    "Frosted, see-through surfaces over a soft wash of colour.": "Матовые полупрозрачные поверхности на мягком цветном фоне.",
+    "Menus, bars and headers blur what's under them.": 'Меню, панели и заголовки размывают то, что под ними.',
 }

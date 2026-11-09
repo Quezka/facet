@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0] - 2026-11-09
+
+Corners that line up (suite-kit 0.10).
+
+- The sidebar, cards and the Settings list share one radius and one gap, and what's inside them is rounded to match,
+  so the curves run side by side. The Settings header floats over the cards, as wide as them.
+- The glass look's description in Settings says what it really does now. Facet's 3D view stays opaque.
+
 ## [0.5.0] - 2026-11-08
 
 ### Changed
