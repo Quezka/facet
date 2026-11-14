@@ -24,13 +24,13 @@ from .settings import SettingsDialog
 from .updates_ui import UpdateChecker
 from .views.home import HomePage
 from .views.viewer import ViewerPage
+from quezka_ui.fit import fit_sidebar
 
 
 class Sidebar(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("sidebar")
-        self.setFixedWidth(px(206))
         self.group = QButtonGroup(self)
         self.group.setExclusive(True)
         brand_icon = QLabel()
@@ -53,6 +53,8 @@ class Sidebar(QFrame):
         layout.addLayout(self.nav)
         layout.addStretch()
         layout.addLayout(self.footer)
+
+        fit_sidebar(self, px(206))
 
     def nav_button(self, icon_name: str, text: str, checkable: bool = True) -> QToolButton:
         button = QToolButton(objectName="nav", text=f"  {text}", checkable=checkable)
