@@ -91,18 +91,12 @@ class ThemeManager(QObject):
         mode = QSettings().value("appearance", "system")
         self.mode = mode if mode in MODES else "system"
         self.contrast = str(QSettings().value("high_contrast", "false")).lower() == "true"
-        self.glass = str(QSettings().value("glass", "true")).lower() == "true"
         app.styleHints().colorSchemeChanged.connect(lambda _scheme: self.apply())
         self.apply()
 
     def set_contrast(self, on: bool):
         self.contrast = on
         QSettings().setValue("high_contrast", "true" if on else "false")
-        self.apply()
-
-    def set_glass(self, on: bool):
-        self.glass = on
-        QSettings().setValue("glass", "true" if on else "false")
         self.apply()
 
     def set_mode(self, mode: str):
@@ -116,7 +110,6 @@ class ThemeManager(QObject):
         else:
             dark = self.mode == "dark"
         self.theme = (HIGH_DARK if dark else HIGH_LIGHT) if self.contrast else (DARK if dark else LIGHT)
-        kit.GLASS = self.glass and not self.contrast  # the kit's glass layer, on Facet's own sheet
         self.app.setPalette(palette(self.theme))
         self.app.setStyleSheet(stylesheet(self.theme))
         self.changed.emit(self.theme)
@@ -367,4 +360,4 @@ def stylesheet(t: Theme) -> str:
     QSplitter::handle {{ background: transparent; }}
     QCalendarWidget QWidget {{ alternate-background-color: {t.raised}; }}
     QCalendarWidget QToolButton {{ border: none; background: transparent; }}
-    """ + ("" if t in (HIGH_LIGHT, HIGH_DARK) else material(t) + kit.glass(t)) + kit.settings_css(t))
+    """ + ("" if t in (HIGH_LIGHT, HIGH_DARK) else material(t)) + kit.settings_css(t))
