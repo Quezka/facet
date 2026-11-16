@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from quezka_ui.pages import PageStack
 from PySide6.QtCore import QSettings, QSize, Qt, QThreadPool
 from PySide6.QtGui import QAction, QIcon, QKeySequence
 from PySide6.QtWidgets import (
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow):
         self.home = HomePage()
         self.viewer = ViewerPage(services, self.measures)
         self.sidebar = Sidebar()
-        self.stack = QStackedWidget()
+        self.stack = PageStack()  # split screen: page scrolls, window stays narrow
         for i, (page, (icon, text)) in enumerate(zip((self.home, self.viewer), self.PAGES)):
             self.stack.addWidget(page)
             self.sidebar.add_page(icon, _(text), f"Ctrl+{i + 1}")
